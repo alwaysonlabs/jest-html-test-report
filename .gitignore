@@ -1,5 +1,6 @@
 node_modules/
 *.html
 !README.md
+!tests/sample-report.html
 .DS_Store
 npm-debug.log*
