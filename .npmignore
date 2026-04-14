@@ -1,0 +1,8 @@
+.gitignore
+*.test.js
+test/
+tests/
+__tests__/
+examples/
+.eslintrc*
+.prettierrc*

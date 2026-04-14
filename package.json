@@ -1,0 +1,49 @@
+{
+  "name": "@alwaysonlabs/jest-html-test-report",
+  "version": "1.0.1",
+  "description": "A sleek, modern HTML test reporter for Jest with a dark glow theme",
+  "author": "John Ringler",
+  "main": "index.js",
+  "bin": {
+    "jest-test-report": "./bin/jest-test-report.js"
+  },
+  "files": [
+    "bin/",
+    "src/",
+    "index.js",
+    "README.md"
+  ],
+  "keywords": [
+    "jest",
+    "reporter",
+    "html",
+    "test",
+    "report",
+    "reporter",
+    "glow",
+    "dark-theme",
+    "jest-reporter",
+    "jest-test-report",
+    "jest-html-test-report"
+  ],
+  "license": "MIT",
+  "peerDependencies": {
+    "jest": ">=27.0.0"
+  },
+  "peerDependenciesMeta": {
+    "jest": {
+      "optional": false
+    }
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/alwaysonlabs/jest-html-test-report"
+  },
+  "bugs": {
+    "url": "https://github.com/alwaysonlabs/jest-html-test-report/issues"
+  },
+  "homepage": "https://github.com/alwaysonlabs/jest-html-test-report#readme"
+}

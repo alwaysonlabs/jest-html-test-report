@@ -1,0 +1,5 @@
+node_modules/
+*.html
+!README.md
+.DS_Store
+npm-debug.log*

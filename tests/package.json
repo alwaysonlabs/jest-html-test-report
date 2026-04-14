@@ -1,0 +1,11 @@
+{
+  "name": "jest-html-test-report-local-tests",
+  "version": "1.0.0",
+  "description": "Local integration tests for jest-html-test-report",
+  "scripts": {
+    "test": "jest"
+  },
+  "devDependencies": {
+    "jest": "^29.0.0"
+  }
+}
