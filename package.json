@@ -1,6 +1,6 @@
 {
   "name": "@alwaysonlabs/jest-html-test-report",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A sleek, modern HTML test reporter for Jest with a dark glow theme",
   "author": "John Ringler",
   "main": "index.js",
