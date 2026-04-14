@@ -1,0 +1,1626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jest HTML Test Report — Local Demo</title>
+  <style>
+
+/* ─── Reset ─────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; scroll-behavior: smooth; }
+
+/* ─── Design tokens: dark (default) ─────────────────────────────────────── */
+:root {
+  --bg-body:        #050b17;
+  --bg-header:      #030810;
+  --bg-card:        #09152280;
+  --bg-card-solid:  #091522;
+  --bg-card-hover:  #0c1c30;
+  --bg-input:       #060d1a;
+  --bg-inset:       #040b16;
+
+  --accent:         #00d4c8;
+  --accent-bright:  #00ede4;
+  --accent-glow:    rgba(0, 212, 200, 0.18);
+  --accent-border:  rgba(0, 212, 200, 0.22);
+  --accent-border2: rgba(0, 212, 200, 0.40);
+
+  --success:        #00e676;
+  --success-dim:    rgba(0, 230, 118, 0.70);
+  --success-glow:   rgba(0, 230, 118, 0.14);
+  --success-border: rgba(0, 230, 118, 0.30);
+
+  --danger:         #ff4757;
+  --danger-dim:     rgba(255, 71, 87, 0.70);
+  --danger-glow:    rgba(255, 71, 87, 0.14);
+  --danger-border:  rgba(255, 71, 87, 0.30);
+
+  --warning:        #ffa502;
+  --warning-dim:    rgba(255, 165, 2, 0.70);
+  --warning-glow:   rgba(255, 165, 2, 0.14);
+  --warning-border: rgba(255, 165, 2, 0.30);
+
+  --text-1:  #f0f6ff;
+  --text-2:  #b8ccdf;
+  --text-3:  #6b87a4;
+  --text-4:  #344e66;
+
+  --border-1: rgba(0, 212, 200, 0.07);
+  --border-2: rgba(0, 212, 200, 0.14);
+  --border-3: rgba(0, 212, 200, 0.28);
+
+  --radius-sm: 6px;
+  --radius:    10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+
+  --shadow-sm:   0 2px 8px rgba(0,0,0,0.35);
+  --shadow-md:   0 4px 24px rgba(0,0,0,0.45);
+  --shadow-lg:   0 8px 48px rgba(0,0,0,0.55);
+  --shadow-glow: 0 0 40px rgba(0, 212, 200, 0.06);
+
+  --font-mono: 'SF Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
+}
+
+/* ─── Design tokens: light override ─────────────────────────────────────── */
+body.light-theme {
+  --bg-body:        #eef2f8;
+  --bg-header:      #ffffff;
+  --bg-card:        rgba(255,255,255,0.85);
+  --bg-card-solid:  #ffffff;
+  --bg-card-hover:  #f7faff;
+  --bg-input:       #f0f4f8;
+  --bg-inset:       #e8edf5;
+
+  --text-1:  #0f1923;
+  --text-2:  #243346;
+  --text-3:  #5a7898;
+  --text-4:  #9cb3c9;
+
+  --border-1: rgba(0,0,0,0.06);
+  --border-2: rgba(0,0,0,0.11);
+  --border-3: rgba(0,0,0,0.22);
+
+  --shadow-sm:   0 2px 8px rgba(0,0,0,0.08);
+  --shadow-md:   0 4px 24px rgba(0,0,0,0.12);
+  --shadow-lg:   0 8px 48px rgba(0,0,0,0.16);
+  --shadow-glow: none;
+}
+body.light-theme .btn-primary {
+  background: #ffffff;
+  border-color: var(--accent-border2);
+  color: var(--accent-bright);
+  box-shadow: 0 0 16px rgba(0,212,200,0.08);
+}
+body.light-theme .btn-primary:hover {
+  background: #f0fdfc;
+}
+
+/* ─── Base body ──────────────────────────────────────────────────────────── */
+body {
+  background-color: var(--bg-body);
+  color: var(--text-2);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, sans-serif;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* Subtle grid pattern for dark theme */
+body.dark-theme::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0,212,200,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,212,200,0.025) 1px, transparent 1px);
+  background-size: 52px 52px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.app { position: relative; z-index: 1; }
+
+/* ─── Layout ─────────────────────────────────────────────────────────────── */
+.main      { padding: 24px 16px 60px; }
+.container { max-width: 1440px; margin: 0 auto; }
+
+/* ─── Header ─────────────────────────────────────────────────────────────── */
+.header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 24px;
+  height: 64px;
+  background: var(--bg-header);
+  border-bottom: 1px solid var(--border-2);
+  box-shadow: var(--shadow-md);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
+}
+
+.header-logo {
+  height: 36px;
+  width: auto;
+  border-radius: var(--radius-sm);
+}
+
+.logo-placeholder {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), #0088ff);
+  box-shadow: 0 0 12px var(--accent-glow), 0 0 24px var(--accent-glow);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.logo-placeholder svg { width: 20px; height: 20px; color: #fff; }
+
+.header-title { line-height: 1.2; }
+.header-title h1 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  background: linear-gradient(120deg, var(--text-1) 40%, var(--accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+body.dark-theme .header-title-text {
+  -webkit-text-fill-color: #ffffff !important;
+  color: #ffffff !important;
+  background: none !important;
+}
+.header-title .subtitle {
+  font-size: 0.72rem;
+  color: var(--text-3);
+}
+
+.header-center { flex: 1; display: flex; justify-content: center; }
+
+.search-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-2);
+  border-radius: var(--radius-xl);
+  padding: 6px 14px;
+  width: 100%;
+  max-width: 380px;
+  transition: border-color 0.2s;
+}
+.search-wrap:focus-within {
+  border-color: var(--accent-border2);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+.search-wrap svg { color: var(--text-3); flex-shrink: 0; }
+.search-input {
+  background: none;
+  border: none;
+  outline: none;
+  color: var(--text-1);
+  font-size: 0.85rem;
+  width: 100%;
+}
+.search-input::placeholder { color: var(--text-4); }
+
+.header-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+.bmc-btn {
+  display: flex; align-items: center;
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  width: 34px; height: 34px;
+  flex-shrink: 0;
+  transition: opacity 0.2s, transform 0.15s;
+}
+.bmc-btn:hover { opacity: 0.85; transform: translateY(-1px); }
+.bmc-gif { display: block; width: 34px; height: 34px; object-fit: cover; }
+
+.icon-btn {
+  width: 34px; height: 34px;
+  display: flex; align-items: center; justify-content: center;
+  background: transparent;
+  border: 1px solid var(--border-2);
+  border-radius: var(--radius-sm);
+  color: var(--text-3);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.icon-btn:hover {
+  border-color: var(--accent-border2);
+  color: var(--accent);
+  background: var(--accent-glow);
+}
+.icon-btn svg { width: 16px; height: 16px; }
+
+/* ─── Section spacing ────────────────────────────────────────────────────── */
+.section { margin-bottom: 20px; }
+
+/* ─── Card ───────────────────────────────────────────────────────────────── */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-2);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md), var(--shadow-glow);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* ─── Execution Summary ──────────────────────────────────────────────────── */
+.summary-card {
+  padding: 28px 28px 22px;
+}
+
+.summary-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.summary-heading { flex: 1; }
+.summary-heading h2 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-1);
+  letter-spacing: -0.01em;
+  margin-bottom: 4px;
+}
+.summary-heading p { font-size: 0.82rem; color: var(--text-3); }
+
+/* Donut chart */
+.risk-widget {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.risk-label-top {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--text-3);
+  text-transform: uppercase;
+}
+.donut-wrap { position: relative; width: 90px; height: 90px; }
+.donut-svg   { width: 90px; height: 90px; transform: rotate(-90deg); }
+.donut-track { fill: none; stroke: var(--border-1); stroke-width: 4; }
+.donut-ring  {
+  fill: none;
+  stroke-width: 4;
+  stroke-linecap: round;
+  transition: stroke-dasharray 0.6s ease;
+}
+.donut-pct {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  line-height: 1;
+}
+.donut-pct .pct-num {
+  font-size: 1.3rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+.donut-pct .pct-sym { font-size: 0.65rem; color: var(--text-3); }
+
+.risk-label-bottom {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.risk-low    { color: var(--success); }
+.risk-medium { color: var(--warning); }
+.risk-high   { color: var(--danger);  }
+
+/* Stats grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 12px;
+}
+
+.stat-card {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-1);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.stat-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  border-radius: 3px 0 0 3px;
+  background: var(--stat-color, var(--accent));
+}
+.stat-card:hover {
+  border-color: var(--border-2);
+  box-shadow: var(--shadow-sm);
+}
+
+.stat-value {
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--stat-color, var(--text-1));
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.stat-label {
+  font-size: 0.72rem;
+  color: var(--text-3);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.stat-sub {
+  font-size: 0.68rem;
+  color: var(--text-4);
+  margin-top: 2px;
+}
+
+/* ─── Performance cards ──────────────────────────────────────────────────── */
+.perf-cards-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.perf-card {
+  padding: 20px 22px;
+}
+
+.perf-card-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 16px;
+}
+
+/* Duration distribution */
+.dist-list { display: flex; flex-direction: column; gap: 10px; }
+
+.dist-row {
+  display: grid;
+  grid-template-columns: 10px 90px 1fr 70px 44px;
+  align-items: center;
+  gap: 10px;
+}
+
+.dist-dot {
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.dist-label {
+  font-size: 0.78rem;
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.dist-bar-wrap {
+  height: 7px;
+  background: var(--bg-inset);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.dist-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.6s ease;
+}
+
+.dist-count {
+  font-size: 0.75rem;
+  color: var(--text-2);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.dist-pct {
+  font-size: 0.72rem;
+  color: var(--text-4);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Slowest tests */
+.slow-list { display: flex; flex-direction: column; gap: 8px; }
+
+.slow-row {
+  display: grid;
+  grid-template-columns: 18px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 10px;
+  background: var(--bg-inset);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-1);
+}
+
+.slow-rank {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--text-4);
+  text-align: center;
+}
+
+.slow-name {
+  position: relative;
+  min-width: 0;
+}
+
+.slow-name-text {
+  font-size: 0.77rem;
+  color: var(--text-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+.slow-name::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0;
+  background: var(--bg-card-solid);
+  color: var(--text-1);
+  border: 1px solid var(--border-3);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  font-size: 0.76rem;
+  line-height: 1.55;
+  white-space: normal;
+  word-break: break-word;
+  max-width: 340px;
+  min-width: 180px;
+  box-shadow: var(--shadow-md);
+  z-index: 200;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.slow-name:hover::after {
+  opacity: 1;
+}
+
+.slow-dur {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--warning);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.perf-empty {
+  font-size: 0.78rem;
+  color: var(--text-4);
+}
+
+@media (max-width: 700px) {
+  .perf-cards-grid { grid-template-columns: 1fr; }
+  .dist-row { grid-template-columns: 10px 80px 1fr 60px 40px; }
+}
+
+/* ─── Warning banner ─────────────────────────────────────────────────────── */
+.warning-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  background: rgba(255, 165, 2, 0.07);
+  border: 1px solid var(--warning-border);
+  border-left: 3px solid var(--warning);
+  border-radius: var(--radius);
+  margin-bottom: 16px;
+  color: var(--text-1);
+  font-size: 0.88rem;
+}
+.warning-banner svg { color: var(--warning); flex-shrink: 0; }
+.warning-banner strong { color: var(--warning); }
+
+/* ─── Action bar ─────────────────────────────────────────────────────────── */
+.action-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 18px;
+  border-radius: var(--radius);
+  font-size: 0.83rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.2s;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, rgba(0,212,200,0.2), rgba(0,136,255,0.15));
+  border-color: var(--accent-border2);
+  color: var(--accent-bright);
+  box-shadow: 0 0 16px rgba(0,212,200,0.08);
+}
+.btn-primary:hover {
+  background: linear-gradient(135deg, rgba(0,212,200,0.3), rgba(0,136,255,0.25));
+  box-shadow: 0 0 24px rgba(0,212,200,0.18);
+  transform: translateY(-1px);
+}
+.btn-primary:active { transform: translateY(0); }
+
+.btn-ghost {
+  background: transparent;
+  border-color: var(--border-2);
+  color: var(--text-3);
+}
+.btn-ghost:hover {
+  border-color: var(--border-3);
+  color: var(--text-2);
+  background: var(--bg-card);
+}
+
+.btn svg { width: 15px; height: 15px; }
+
+/* ─── Filter cards ───────────────────────────────────────────────────────── */
+.filter-section { margin-bottom: 20px; }
+
+.filter-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+.filter-card {
+  position: relative;
+  background: var(--bg-card);
+  border: 1px solid var(--border-2);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+.filter-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.2s;
+  background: radial-gradient(ellipse at 50% -20%, var(--fc-glow, var(--accent-glow)), transparent 70%);
+}
+.filter-card:hover::after,
+.filter-card.active::after { opacity: 1; }
+.filter-card:hover {
+  border-color: var(--fc-border, var(--accent-border));
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+.filter-card.active {
+  border-color: var(--fc-border, var(--accent-border2));
+  box-shadow: var(--shadow-md), 0 0 0 1px var(--fc-border, var(--accent-border));
+}
+
+.fc-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.fc-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.fc-icon {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--fc-glow, var(--accent-glow));
+  border: 1px solid var(--fc-border, var(--accent-border));
+}
+.fc-icon svg { width: 14px; height: 14px; color: var(--fc-color, var(--accent)); }
+
+.fc-value {
+  font-size: 2.2rem;
+  font-weight: 900;
+  letter-spacing: -0.05em;
+  color: var(--fc-color, var(--accent));
+  line-height: 1;
+  margin-bottom: 6px;
+  position: relative; z-index: 1;
+}
+
+.fc-bar {
+  height: 4px;
+  background: var(--border-1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.fc-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: var(--fc-color, var(--accent));
+  box-shadow: 0 0 8px var(--fc-glow, var(--accent-glow));
+  transition: width 0.8s ease;
+}
+
+/* ─── Test suites ────────────────────────────────────────────────────────── */
+.suites-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding: 0 4px;
+}
+.suites-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-3);
+}
+.suites-actions { display: flex; gap: 8px; }
+
+.suite-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-1);
+  border-radius: var(--radius-lg);
+  margin-bottom: 10px;
+  overflow: hidden;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-shadow: var(--shadow-sm);
+}
+.suite-card:hover { border-color: var(--border-2); }
+.suite-card.suite-failed { border-left: 3px solid var(--danger); }
+.suite-card.suite-passed { border-left: 3px solid var(--success); }
+.suite-card.suite-skipped { border-left: 3px solid var(--warning); }
+
+.suite-card.hidden { display: none; }
+
+.suite-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s;
+}
+.suite-header:hover { background: var(--bg-card-hover); }
+
+.suite-status-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.suite-failed .suite-status-dot  { background: var(--danger);  box-shadow: 0 0 6px var(--danger-glow); }
+.suite-passed .suite-status-dot  { background: var(--success); box-shadow: 0 0 6px var(--success-glow); }
+.suite-skipped .suite-status-dot { background: var(--warning); box-shadow: 0 0 6px var(--warning-glow); }
+
+.suite-name {
+  flex: 1;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--text-1);
+  font-family: var(--font-mono);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.suite-badges {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+  align-items: center;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 100px;
+  font-size: 0.70rem;
+  font-weight: 700;
+}
+.badge-passed  { background: var(--success-glow); color: var(--success); border: 1px solid var(--success-border); }
+.badge-failed  { background: var(--danger-glow);  color: var(--danger);  border: 1px solid var(--danger-border);  }
+.badge-skipped { background: var(--warning-glow); color: var(--warning); border: 1px solid var(--warning-border); }
+
+.suite-duration {
+  font-size: 0.72rem;
+  color: var(--text-3);
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+}
+
+.expand-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-3);
+  flex-shrink: 0;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s, transform 0.25s;
+}
+.expand-btn svg { width: 16px; height: 16px; }
+.suite-card.expanded .expand-btn { transform: rotate(180deg); color: var(--accent); }
+
+/* Suite body (collapsible) */
+.suite-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  border-top: 0 solid var(--border-1);
+}
+.suite-card.expanded .suite-body {
+  max-height: 8000px;
+  border-top-width: 1px;
+}
+
+/* Individual test rows */
+.test-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 16px 10px 36px;
+  border-bottom: 1px solid var(--border-1);
+  transition: background 0.15s;
+}
+.test-row:last-child { border-bottom: none; }
+.test-row:hover { background: var(--bg-card-hover); }
+.test-row.test-hidden { display: none; }
+
+.test-status-icon {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.test-passed  .test-status-icon { background: var(--success-glow); color: var(--success); }
+.test-failed  .test-status-icon { background: var(--danger-glow);  color: var(--danger);  }
+.test-skipped .test-status-icon { background: var(--warning-glow); color: var(--warning); }
+.test-status-icon svg { width: 10px; height: 10px; }
+
+.test-info { flex: 1; min-width: 0; }
+.test-name {
+  font-size: 0.83rem;
+  color: var(--text-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.test-ancestors {
+  font-size: 0.72rem;
+  color: var(--text-3);
+  margin-bottom: 2px;
+}
+
+.test-duration {
+  font-size: 0.70rem;
+  color: var(--text-3);
+  font-family: var(--font-mono);
+  flex-shrink: 0;
+  align-self: flex-start;
+  margin-top: 2px;
+}
+.test-duration.slow { color: var(--warning); }
+
+/* Failure messages */
+.failure-block {
+  margin: 8px 36px 10px;
+  background: rgba(255, 71, 87, 0.06);
+  border: 1px solid var(--danger-border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.failure-block pre {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1.6;
+  padding: 12px 14px;
+  color: var(--text-2);
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+.failure-block pre .err-line { color: var(--danger); }
+
+/* Console output */
+.console-block {
+  margin: 0 36px 10px;
+  background: var(--bg-inset);
+  border: 1px solid var(--border-2);
+  border-radius: var(--radius-sm);
+}
+.console-title {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-3);
+  padding: 6px 12px 4px;
+  border-bottom: 1px solid var(--border-1);
+}
+.console-block pre {
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  line-height: 1.6;
+  padding: 10px 12px;
+  color: var(--text-2);
+  overflow-x: auto;
+  white-space: pre-wrap;
+}
+
+/* ─── No results ──────────────────────────────────────────────────────────── */
+.no-results {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-3);
+  font-size: 0.9rem;
+  display: none;
+}
+.no-results svg { width: 40px; height: 40px; margin: 0 auto 12px; display: block; opacity: 0.4; }
+
+/* ─── Environment ────────────────────────────────────────────────────────── */
+.env-card {
+  padding: 20px 24px;
+  margin-top: 20px;
+}
+.env-title {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+  color: var(--text-3);
+  margin-bottom: 16px;
+}
+.env-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+.env-item {}
+.env-key {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-4);
+  margin-bottom: 2px;
+}
+.env-val {
+  font-size: 0.82rem;
+  color: var(--text-2);
+  font-family: var(--font-mono);
+}
+
+/* ─── Toast ──────────────────────────────────────────────────────────────── */
+.toast {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  background: var(--bg-card-solid);
+  border: 1px solid var(--accent-border2);
+  border-radius: var(--radius);
+  padding: 12px 20px;
+  font-size: 0.84rem;
+  color: var(--text-1);
+  box-shadow: var(--shadow-lg), 0 0 20px var(--accent-glow);
+  z-index: 9999;
+  transform: translateY(80px);
+  opacity: 0;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s;
+  pointer-events: none;
+}
+.toast.visible {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* ─── Scrollbar ──────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border-3); }
+
+/* ─── Responsive ─────────────────────────────────────────────────────────── */
+@media (max-width: 1100px) {
+  .stats-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 860px) {
+  .filter-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 700px) {
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .summary-top { flex-direction: column-reverse; align-items: flex-start; }
+  .risk-widget { flex-direction: row; align-items: center; gap: 14px; }
+  .header-center { display: none; }
+}
+@media (max-width: 480px) {
+  .stats-grid  { grid-template-columns: 1fr; }
+  .filter-grid { grid-template-columns: 1fr 1fr; }
+  .main { padding: 16px 10px 40px; }
+  .summary-card { padding: 18px; }
+}
+
+/* ─── Utility ────────────────────────────────────────────────────────────── */
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; }
+
+/* ─── Footer ─────────────────────────────────────────────────────────────── */
+.report-footer {
+  text-align: center;
+  padding: 16px;
+  font-size: 0.75rem;
+  color: var(--text-4);
+  border-top: 1px solid var(--border-1);
+}
+
+  </style>
+</head>
+<body class="dark-theme">
+  <div class="app">
+    
+  <header class="header">
+    <div class="header-left">
+      <div class="logo-placeholder"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+      <div class="header-title">
+        <h1 class="header-title-text">Jest HTML Test Report — Local Demo</h1>
+        <div class="subtitle">Apr 13, 2026, 05:53:13 PM</div>
+      </div>
+    </div>
+    <div class="header-center">
+      <div class="search-wrap">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input
+          type="search"
+          class="search-input"
+          id="searchInput"
+          placeholder="Search tests…"
+          aria-label="Search tests"
+          oninput="handleSearch(this.value)"
+        />
+      </div>
+    </div>
+    <div class="header-right">
+      
+      <button class="icon-btn" id="themeBtn" title="Toggle theme" onclick="toggleTheme()" aria-label="Toggle theme">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      </button>
+    </div>
+  </header>
+    <main class="main">
+      <div class="container">
+        
+  <section class="section card summary-card">
+    <div class="summary-top">
+      <div class="summary-heading">
+        <h2>Execution Summary</h2>
+        <p>Quality metrics at a glance for stakeholders</p>
+      </div>
+      <div class="risk-widget">
+        <span class="risk-label-top">Risk Level</span>
+        <div class="donut-wrap">
+    <svg class="donut-svg" viewBox="0 0 42 42" aria-hidden="true">
+      <circle class="donut-track" cx="21" cy="21" r="15.9155" />
+      <circle class="donut-ring"
+        cx="21" cy="21" r="15.9155"
+        stroke="var(--success)"
+        stroke-dasharray="90 10"
+        stroke-dashoffset="25"
+      />
+    </svg>
+    <div class="donut-pct">
+      <span class="pct-num risk-low">90</span>
+      <span class="pct-sym">%</span>
+    </div></div>
+        <span class="risk-label-bottom risk-low">Low</span>
+      </div>
+    </div>
+    <div class="stats-grid">
+      
+    <div class="stat-card" style="--stat-color:var(--accent)">
+      <div class="stat-value">94</div>
+      <div class="stat-label">Tests Executed</div>
+      
+    </div>
+    <div class="stat-card" style="--stat-color:var(--success)">
+      <div class="stat-value">90.4%</div>
+      <div class="stat-label">Success Rate</div>
+      
+    </div>
+    <div class="stat-card" style="--stat-color:var(--danger)">
+      <div class="stat-value">3</div>
+      <div class="stat-label">Failures</div>
+      <div class="stat-sub">Review required</div>
+    </div>
+    <div class="stat-card" style="--stat-color:var(--accent)">
+      <div class="stat-value">302ms</div>
+      <div class="stat-label">Total Duration</div>
+      
+    </div>
+    <div class="stat-card" style="--stat-color:var(--accent)">
+      <div class="stat-value">3ms</div>
+      <div class="stat-label">Avg per Test</div>
+      
+    </div>
+    <div class="stat-card" style="--stat-color:var(--warning)">
+      <div class="stat-value">2/5</div>
+      <div class="stat-label">Suites Passed</div>
+      <div class="stat-sub">3 failed</div>
+    </div>
+    </div>
+  </section>
+        
+  <div class="perf-cards-grid">
+    <div class="card perf-card">
+      <div class="perf-card-title">Duration Distribution</div>
+      <div class="dist-list">
+      <div class="dist-row">
+        <span class="dist-dot" style="background:var(--success)"></span>
+        <span class="dist-label">&lt;2ms</span>
+        <div class="dist-bar-wrap">
+          <div class="dist-bar-fill" style="width:88%;background:var(--success);box-shadow:0 0 6px var(--success-glow)"></div>
+        </div>
+        <span class="dist-count">83 tests</span>
+        <span class="dist-pct">(88%)</span>
+      </div>
+      <div class="dist-row">
+        <span class="dist-dot" style="background:var(--warning)"></span>
+        <span class="dist-label">2–5ms</span>
+        <div class="dist-bar-wrap">
+          <div class="dist-bar-fill" style="width:3%;background:var(--warning);box-shadow:0 0 6px var(--warning-glow)"></div>
+        </div>
+        <span class="dist-count">3 tests</span>
+        <span class="dist-pct">(3%)</span>
+      </div>
+      <div class="dist-row">
+        <span class="dist-dot" style="background:rgba(255,140,0,0.90)"></span>
+        <span class="dist-label">5–10ms</span>
+        <div class="dist-bar-wrap">
+          <div class="dist-bar-fill" style="width:1%;background:rgba(255,140,0,0.90);box-shadow:0 0 6px rgba(255,140,0,0.14)"></div>
+        </div>
+        <span class="dist-count">1 test</span>
+        <span class="dist-pct">(1%)</span>
+      </div>
+      <div class="dist-row">
+        <span class="dist-dot" style="background:var(--danger)"></span>
+        <span class="dist-label">&gt;10ms</span>
+        <div class="dist-bar-wrap">
+          <div class="dist-bar-fill" style="width:7%;background:var(--danger);box-shadow:0 0 6px var(--danger-glow)"></div>
+        </div>
+        <span class="dist-count">7 tests</span>
+        <span class="dist-pct">(7%)</span>
+      </div></div>
+    </div>
+    <div class="card perf-card">
+      <div class="perf-card-title">Top 5 Slowest Tests</div>
+      <div class="slow-list">
+      <div class="slow-row">
+        <span class="slow-rank">1</span>
+        <span class="slow-name" data-tooltip="withTimeout › rejects when operation exceeds timeout">
+          <span class="slow-name-text">withTimeout › rejects when operation exceeds timeout</span>
+        </span>
+        <span class="slow-dur">53ms</span>
+      </div>
+      <div class="slow-row">
+        <span class="slow-rank">2</span>
+        <span class="slow-name" data-tooltip="fetchUser › throws when user is not found">
+          <span class="slow-name-text">fetchUser › throws when user is not found</span>
+        </span>
+        <span class="slow-dur">13ms</span>
+      </div>
+      <div class="slow-row">
+        <span class="slow-rank">3</span>
+        <span class="slow-name" data-tooltip="fetchUser › user 3 has admin role">
+          <span class="slow-name-text">fetchUser › user 3 has admin role</span>
+        </span>
+        <span class="slow-dur">13ms</span>
+      </div>
+      <div class="slow-row">
+        <span class="slow-rank">4</span>
+        <span class="slow-name" data-tooltip="fetchUser › returns user for a valid id">
+          <span class="slow-name-text">fetchUser › returns user for a valid id</span>
+        </span>
+        <span class="slow-dur">12ms</span>
+      </div>
+      <div class="slow-row">
+        <span class="slow-rank">5</span>
+        <span class="slow-name" data-tooltip="fetchMultipleUsers › returns all requested users in order">
+          <span class="slow-name-text">fetchMultipleUsers › returns all requested users in order</span>
+        </span>
+        <span class="slow-dur">12ms</span>
+      </div></div>
+    </div>
+  </div>
+        
+  <div class="warning-banner" role="alert">
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    <span>
+      <strong>3 tests failed</strong> &mdash;
+      Review the failures below before proceeding with release.
+    </span>
+  </div>
+        
+  <div class="action-bar">
+    <button class="btn btn-primary" onclick="copySummaryToClipboard()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      Copy Summary to Clipboard
+    </button>
+  </div>
+        
+  <section class="filter-section">
+    <div class="filter-grid">
+    <button
+      class="filter-card active"
+      data-filter="all"
+      style="--fc-color:var(--accent);--fc-glow:var(--accent-glow);--fc-border:var(--accent-border)"
+      onclick="setFilter('all')"
+      aria-pressed="true"
+    >
+      <div class="fc-header">
+        <span class="fc-label">Total Tests</span>
+        <span class="fc-icon"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span>
+      </div>
+      <div class="fc-value">94</div>
+      <div class="fc-bar">
+        <div class="fc-bar-fill" data-pct="100" style="width:0%"></div>
+      </div>
+    </button>
+    <button
+      class="filter-card"
+      data-filter="passed"
+      style="--fc-color:var(--success);--fc-glow:var(--success-glow);--fc-border:var(--success-border)"
+      onclick="setFilter('passed')"
+      aria-pressed="false"
+    >
+      <div class="fc-header">
+        <span class="fc-label">Passed</span>
+        <span class="fc-icon"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></span>
+      </div>
+      <div class="fc-value">85</div>
+      <div class="fc-bar">
+        <div class="fc-bar-fill" data-pct="90" style="width:0%"></div>
+      </div>
+    </button>
+    <button
+      class="filter-card"
+      data-filter="failed"
+      style="--fc-color:var(--danger);--fc-glow:var(--danger-glow);--fc-border:var(--danger-border)"
+      onclick="setFilter('failed')"
+      aria-pressed="false"
+    >
+      <div class="fc-header">
+        <span class="fc-label">Failed</span>
+        <span class="fc-icon"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></span>
+      </div>
+      <div class="fc-value">3</div>
+      <div class="fc-bar">
+        <div class="fc-bar-fill" data-pct="3" style="width:0%"></div>
+      </div>
+    </button>
+    <button
+      class="filter-card"
+      data-filter="skipped"
+      style="--fc-color:var(--warning);--fc-glow:var(--warning-glow);--fc-border:var(--warning-border)"
+      onclick="setFilter('skipped')"
+      aria-pressed="false"
+    >
+      <div class="fc-header">
+        <span class="fc-label">Skipped</span>
+        <span class="fc-icon"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg></span>
+      </div>
+      <div class="fc-value">6</div>
+      <div class="fc-bar">
+        <div class="fc-bar-fill" data-pct="6" style="width:0%"></div>
+      </div>
+    </button></div>
+  </section>
+        <div id="testSuites"><!-- rendered by JS --></div>
+        
+  <section class="section card env-card">
+    <div class="env-title">Environment</div>
+    <div class="env-grid">
+      
+      <div class="env-item">
+        <div class="env-key">Node.js</div>
+        <div class="env-val">v24.12.0</div>
+      </div>
+      <div class="env-item">
+        <div class="env-key">Platform</div>
+        <div class="env-val">darwin</div>
+      </div>
+      <div class="env-item">
+        <div class="env-key">Jest</div>
+        <div class="env-val">unknown</div>
+      </div>
+      <div class="env-item">
+        <div class="env-key">jest-test-report</div>
+        <div class="env-val">1.0.1</div>
+      </div>
+      <div class="env-item">
+        <div class="env-key">Generated</div>
+        <div class="env-val">Apr 13, 2026, 05:53:13 PM</div>
+      </div>
+    </div>
+  </section>
+      </div>
+    </main>
+    <footer class="report-footer">
+      <span>Copyright &copy; 2026 Always On Labs, Inc.</span>
+    </footer>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script>
+    var REPORT_DATA  = {"suites":[{"displayName":"async.test.js","fullPath":"/Users/alwaysonlabs/Code/jest-html-test-report/tests/async.test.js","status":"failed","duration":0.193,"passed":10,"failed":1,"skipped":1,"total":12,"tests":[{"title":"returns user for a valid id","fullName":"fetchUser › returns user for a valid id","ancestorTitles":["fetchUser"],"status":"passed","duration":12,"failureMessages":[]},{"title":"returns correct role for user 2","fullName":"fetchUser › returns correct role for user 2","ancestorTitles":["fetchUser"],"status":"passed","duration":11,"failureMessages":[]},{"title":"throws when user is not found","fullName":"fetchUser › throws when user is not found","ancestorTitles":["fetchUser"],"status":"passed","duration":13,"failureMessages":[]},{"title":"user 3 has admin role","fullName":"fetchUser › user 3 has admin role","ancestorTitles":["fetchUser"],"status":"failed","duration":13,"failureMessages":["Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m\"admin\"\u001b[39m\nReceived: \u001b[31m\"viewer\"\u001b[39m\n    at Object.toBe (/Users/alwaysonlabs/Code/jest-html-test-report/tests/async.test.js:66:23)"]},{"title":"returns all requested users in order","fullName":"fetchMultipleUsers › returns all requested users in order","ancestorTitles":["fetchMultipleUsers"],"status":"passed","duration":12,"failureMessages":[]},{"title":"rejects if any id is invalid","fullName":"fetchMultipleUsers › rejects if any id is invalid","ancestorTitles":["fetchMultipleUsers"],"status":"passed","duration":10,"failureMessages":[]},{"title":"returns result on first successful attempt","fullName":"retry › returns result on first successful attempt","ancestorTitles":["retry"],"status":"passed","duration":0,"failureMessages":[]},{"title":"retries and succeeds on a later attempt","fullName":"retry › retries and succeeds on a later attempt","ancestorTitles":["retry"],"status":"passed","duration":0,"failureMessages":[]},{"title":"throws after exhausting all attempts","fullName":"retry › throws after exhausting all attempts","ancestorTitles":["retry"],"status":"passed","duration":0,"failureMessages":[]},{"title":"resolves when operation completes in time","fullName":"withTimeout › resolves when operation completes in time","ancestorTitles":["withTimeout"],"status":"passed","duration":6,"failureMessages":[]},{"title":"rejects when operation exceeds timeout","fullName":"withTimeout › rejects when operation exceeds timeout","ancestorTitles":["withTimeout"],"status":"passed","duration":53,"failureMessages":[]},{"title":"can cancel in-flight operations via AbortController","fullName":"withTimeout › can cancel in-flight operations via AbortController","ancestorTitles":["withTimeout"],"status":"skipped","duration":0,"failureMessages":[]}],"consoleOutput":[]},{"displayName":"math.test.js","fullPath":"/Users/alwaysonlabs/Code/jest-html-test-report/tests/math.test.js","status":"failed","duration":0.024,"passed":18,"failed":1,"skipped":0,"total":19,"tests":[{"title":"adds two positive numbers","fullName":"Basic arithmetic › adds two positive numbers","ancestorTitles":["Basic arithmetic"],"status":"passed","duration":0,"failureMessages":[]},{"title":"adds a positive and a negative number","fullName":"Basic arithmetic › adds a positive and a negative number","ancestorTitles":["Basic arithmetic"],"status":"passed","duration":0,"failureMessages":[]},{"title":"subtracts correctly","fullName":"Basic arithmetic › subtracts correctly","ancestorTitles":["Basic arithmetic"],"status":"passed","duration":0,"failureMessages":[]},{"title":"multiplies two numbers","fullName":"Basic arithmetic › multiplies two numbers","ancestorTitles":["Basic arithmetic"],"status":"passed","duration":0,"failureMessages":[]},{"title":"divides evenly","fullName":"Basic arithmetic › divides evenly","ancestorTitles":["Basic arithmetic"],"status":"passed","duration":0,"failureMessages":[]},{"title":"throws on division by zero","fullName":"Basic arithmetic › throws on division by zero","ancestorTitles":["Basic arithmetic"],"status":"passed","duration":2,"failureMessages":[]},{"title":"returns value when within range","fullName":"clamp › returns value when within range","ancestorTitles":["clamp"],"status":"passed","duration":0,"failureMessages":[]},{"title":"clamps to min when value is too low","fullName":"clamp › clamps to min when value is too low","ancestorTitles":["clamp"],"status":"passed","duration":0,"failureMessages":[]},{"title":"clamps to max when value is too high","fullName":"clamp › clamps to max when value is too high","ancestorTitles":["clamp"],"status":"passed","duration":0,"failureMessages":[]},{"title":"rounds to 2 decimal places","fullName":"roundTo › rounds to 2 decimal places","ancestorTitles":["roundTo"],"status":"passed","duration":0,"failureMessages":[]},{"title":"rounds to 0 decimal places","fullName":"roundTo › rounds to 0 decimal places","ancestorTitles":["roundTo"],"status":"passed","duration":0,"failureMessages":[]},{"title":"factorial of 0 is 1","fullName":"factorial › factorial of 0 is 1","ancestorTitles":["factorial"],"status":"passed","duration":0,"failureMessages":[]},{"title":"factorial of 5 is 120","fullName":"factorial › factorial of 5 is 120","ancestorTitles":["factorial"],"status":"passed","duration":0,"failureMessages":[]},{"title":"factorial of 6 is 720","fullName":"factorial › factorial of 6 is 720","ancestorTitles":["factorial"],"status":"failed","duration":0,"failureMessages":["Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m700\u001b[39m\nReceived: \u001b[31m720\u001b[39m\n    at Object.toBe (/Users/alwaysonlabs/Code/jest-html-test-report/tests/math.test.js:89:26)\n    at Promise.finally.completed (/Users/alwaysonlabs/Code/jest-html-test-report/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)\n    at new Promise (<anonymous>)\n    at callAsyncCircusFn (/Users/alwaysonlabs/Code/jest-html-test-report/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)\n    at _callCircusTest (/Users/alwaysonlabs/Code/jest-html-test-report/node_modules/jest-circus/build/jestAdapterInit.js:1007:40)\n    at _runTest (/Users/alwaysonlabs/Code/jest-html-test-report/node_modules/jest-circus/build/jestAdapterInit.js:947:3)\n    at /Users/alwaysonlabs/Code/jest-html-test-report/node_modules/jest-circus/build/jestAdapterInit.js:849:7\n    at _runTestsForDescribeBlock (/Users/alwaysonlabs/Code/jest-html-test-report/node_modules/jest-circus/build/jestAdapterInit.js:862:11)\n    at _runTestsForDescribeBlock (/Users/alwaysonlabs/Code/jest-html-test-report/node_modules/jest-circus/build/jestAdapterInit.js:857:11)\n    at run (/Users/alwaysonlabs/Code/jest-html-test-report/node_modules/jest-circus/build/jestAdapterInit.js:761:3)\n    at runAndTransformResultsToJestFormat (/Users/alwaysonlabs/Code/jest-html-test-report/node_modules/jest-circus/build/jestAdapterInit.js:1918:21)\n    at jestAdapter (/Users/alwaysonlabs/Code/jest-html-test-report/node_modules/jest-circus/build/runner.js:101:19)\n    at runTestInternal (/Users/alwaysonlabs/Code/jest-html-test-report/node_modules/jest-runner/build/index.js:275:16)\n    at runTest (/Users/alwaysonlabs/Code/jest-html-test-report/node_modules/jest-runner/build/index.js:343:7)"]},{"title":"throws on negative input","fullName":"factorial › throws on negative input","ancestorTitles":["factorial"],"status":"passed","duration":0,"failureMessages":[]},{"title":"2 is prime","fullName":"isPrime › 2 is prime","ancestorTitles":["isPrime"],"status":"passed","duration":0,"failureMessages":[]},{"title":"17 is prime","fullName":"isPrime › 17 is prime","ancestorTitles":["isPrime"],"status":"passed","duration":0,"failureMessages":[]},{"title":"1 is not prime","fullName":"isPrime › 1 is not prime","ancestorTitles":["isPrime"],"status":"passed","duration":1,"failureMessages":[]},{"title":"9 is not prime","fullName":"isPrime › 9 is not prime","ancestorTitles":["isPrime"],"status":"passed","duration":0,"failureMessages":[]}],"consoleOutput":[]},{"displayName":"string.test.js","fullPath":"/Users/alwaysonlabs/Code/jest-html-test-report/tests/string.test.js","status":"failed","duration":0.015,"passed":21,"failed":1,"skipped":0,"total":22,"tests":[{"title":"capitalizes a lowercase word","fullName":"capitalize › capitalizes a lowercase word","ancestorTitles":["capitalize"],"status":"passed","duration":0,"failureMessages":[]},{"title":"lowercases the rest of the string","fullName":"capitalize › lowercases the rest of the string","ancestorTitles":["capitalize"],"status":"passed","duration":0,"failureMessages":[]},{"title":"returns empty string for empty input","fullName":"capitalize › returns empty string for empty input","ancestorTitles":["capitalize"],"status":"passed","duration":0,"failureMessages":[]},{"title":"converts spaces to hyphens","fullName":"slugify › converts spaces to hyphens","ancestorTitles":["slugify"],"status":"passed","duration":0,"failureMessages":[]},{"title":"strips special characters","fullName":"slugify › strips special characters","ancestorTitles":["slugify"],"status":"passed","duration":0,"failureMessages":[]},{"title":"collapses multiple hyphens","fullName":"slugify › collapses multiple hyphens","ancestorTitles":["slugify"],"status":"passed","duration":0,"failureMessages":[]},{"title":"handles leading and trailing spaces","fullName":"slugify › handles leading and trailing spaces","ancestorTitles":["slugify"],"status":"failed","duration":0,"failureMessages":["Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m\"hello-\u001b[7m-\u001b[27mworld\"\u001b[39m\nReceived: \u001b[31m\"hello-world\"\u001b[39m\n    at Object.toBe (/Users/alwaysonlabs/Code/jest-html-test-report/tests/string.test.js:73:40)\n    at Promise.finally.completed (/Users/alwaysonlabs/Code/jest-html-test-report/node_modules/jest-circus/build/jestAdapterInit.js:1557:28)\n    at new Promise (<anonymous>)\n    at callAsyncCircusFn (/Users/alwaysonlabs/Code/jest-html-test-report/node_modules/jest-circus/build/jestAdapterInit.js:1497:10)\n    at _callCircusTest (/Users/alwaysonlabs/Code/jest-html-test-report/node_modules/jest-circus/build/jestAdapterInit.js:1007:40)\n    at _runTest (/Users/alwaysonlabs/Code/jest-html-test-report/node_modules/jest-circus/build/jestAdapterInit.js:947:3)\n    at /Users/alwaysonlabs/Code/jest-html-test-report/node_modules/jest-circus/build/jestAdapterInit.js:849:7\n    at _runTestsForDescribeBlock (/Users/alwaysonlabs/Code/jest-html-test-report/node_modules/jest-circus/build/jestAdapterInit.js:862:11)\n    at _runTestsForDescribeBlock (/Users/alwaysonlabs/Code/jest-html-test-report/node_modules/jest-circus/build/jestAdapterInit.js:857:11)\n    at run (/Users/alwaysonlabs/Code/jest-html-test-report/node_modules/jest-circus/build/jestAdapterInit.js:761:3)\n    at runAndTransformResultsToJestFormat (/Users/alwaysonlabs/Code/jest-html-test-report/node_modules/jest-circus/build/jestAdapterInit.js:1918:21)\n    at jestAdapter (/Users/alwaysonlabs/Code/jest-html-test-report/node_modules/jest-circus/build/runner.js:101:19)\n    at runTestInternal (/Users/alwaysonlabs/Code/jest-html-test-report/node_modules/jest-runner/build/index.js:275:16)\n    at runTest (/Users/alwaysonlabs/Code/jest-html-test-report/node_modules/jest-runner/build/index.js:343:7)"]},{"title":"does not truncate when string is short enough","fullName":"truncate › does not truncate when string is short enough","ancestorTitles":["truncate"],"status":"passed","duration":0,"failureMessages":[]},{"title":"truncates long strings with default suffix","fullName":"truncate › truncates long strings with default suffix","ancestorTitles":["truncate"],"status":"passed","duration":0,"failureMessages":[]},{"title":"uses custom suffix","fullName":"truncate › uses custom suffix","ancestorTitles":["truncate"],"status":"passed","duration":0,"failureMessages":[]},{"title":"converts hyphenated string","fullName":"toCamelCase › converts hyphenated string","ancestorTitles":["toCamelCase"],"status":"passed","duration":0,"failureMessages":[]},{"title":"converts snake_case string","fullName":"toCamelCase › converts snake_case string","ancestorTitles":["toCamelCase"],"status":"passed","duration":0,"failureMessages":[]},{"title":"converts space-separated words","fullName":"toCamelCase › converts space-separated words","ancestorTitles":["toCamelCase"],"status":"passed","duration":0,"failureMessages":[]},{"title":"detects a simple palindrome","fullName":"isPalindrome › detects a simple palindrome","ancestorTitles":["isPalindrome"],"status":"passed","duration":0,"failureMessages":[]},{"title":"ignores spaces and punctuation","fullName":"isPalindrome › ignores spaces and punctuation","ancestorTitles":["isPalindrome"],"status":"passed","duration":0,"failureMessages":[]},{"title":"returns false for non-palindrome","fullName":"isPalindrome › returns false for non-palindrome","ancestorTitles":["isPalindrome"],"status":"passed","duration":0,"failureMessages":[]},{"title":"counts words in a sentence","fullName":"countWords › counts words in a sentence","ancestorTitles":["countWords"],"status":"passed","duration":0,"failureMessages":[]},{"title":"returns 0 for empty string","fullName":"countWords › returns 0 for empty string","ancestorTitles":["countWords"],"status":"passed","duration":0,"failureMessages":[]},{"title":"handles extra whitespace","fullName":"countWords › handles extra whitespace","ancestorTitles":["countWords"],"status":"passed","duration":0,"failureMessages":[]},{"title":"repeats a string the given number of times","fullName":"repeat › repeats a string the given number of times","ancestorTitles":["repeat"],"status":"passed","duration":0,"failureMessages":[]},{"title":"returns empty string when times is 0","fullName":"repeat › returns empty string when times is 0","ancestorTitles":["repeat"],"status":"passed","duration":0,"failureMessages":[]},{"title":"throws when times is negative","fullName":"repeat › throws when times is negative","ancestorTitles":["repeat"],"status":"passed","duration":1,"failureMessages":[]}],"consoleOutput":[]},{"displayName":"user.test.js","fullPath":"/Users/alwaysonlabs/Code/jest-html-test-report/tests/user.test.js","status":"passed","duration":0.017,"passed":19,"failed":0,"skipped":2,"total":21,"tests":[{"title":"accepts a standard email address","fullName":"isValidEmail › accepts a standard email address","ancestorTitles":["isValidEmail"],"status":"passed","duration":0,"failureMessages":[]},{"title":"accepts email with subdomain","fullName":"isValidEmail › accepts email with subdomain","ancestorTitles":["isValidEmail"],"status":"passed","duration":0,"failureMessages":[]},{"title":"rejects address with no @","fullName":"isValidEmail › rejects address with no @","ancestorTitles":["isValidEmail"],"status":"passed","duration":0,"failureMessages":[]},{"title":"rejects address with no domain","fullName":"isValidEmail › rejects address with no domain","ancestorTitles":["isValidEmail"],"status":"passed","duration":0,"failureMessages":[]},{"title":"rejects non-string input","fullName":"isValidEmail › rejects non-string input","ancestorTitles":["isValidEmail"],"status":"passed","duration":0,"failureMessages":[]},{"title":"accepts age 0","fullName":"isValidAge › accepts age 0","ancestorTitles":["isValidAge"],"status":"passed","duration":0,"failureMessages":[]},{"title":"accepts age 150","fullName":"isValidAge › accepts age 150","ancestorTitles":["isValidAge"],"status":"passed","duration":0,"failureMessages":[]},{"title":"rejects negative age","fullName":"isValidAge › rejects negative age","ancestorTitles":["isValidAge"],"status":"passed","duration":0,"failureMessages":[]},{"title":"rejects fractional age","fullName":"isValidAge › rejects fractional age","ancestorTitles":["isValidAge"],"status":"passed","duration":0,"failureMessages":[]},{"title":"rejects string input","fullName":"isValidAge › rejects string input","ancestorTitles":["isValidAge"],"status":"passed","duration":0,"failureMessages":[]},{"title":"creates a valid user object","fullName":"createUser › creates a valid user object","ancestorTitles":["createUser"],"status":"passed","duration":1,"failureMessages":[]},{"title":"normalises email to lowercase","fullName":"createUser › normalises email to lowercase","ancestorTitles":["createUser"],"status":"passed","duration":0,"failureMessages":[]},{"title":"throws on invalid email","fullName":"createUser › throws on invalid email","ancestorTitles":["createUser"],"status":"passed","duration":2,"failureMessages":[]},{"title":"throws on invalid age","fullName":"createUser › throws on invalid age","ancestorTitles":["createUser"],"status":"passed","duration":0,"failureMessages":[]},{"title":"throws when email is already registered","fullName":"createUser › throws when email is already registered","ancestorTitles":["createUser"],"status":"skipped","duration":0,"failureMessages":[]},{"title":"formats name and email correctly","fullName":"formatDisplayName › formats name and email correctly","ancestorTitles":["formatDisplayName"],"status":"passed","duration":0,"failureMessages":[]},{"title":"admin has manage permission","fullName":"hasPermission › admin has manage permission","ancestorTitles":["hasPermission"],"status":"passed","duration":0,"failureMessages":[]},{"title":"editor can write but not delete","fullName":"hasPermission › editor can write but not delete","ancestorTitles":["hasPermission"],"status":"passed","duration":0,"failureMessages":[]},{"title":"viewer can only read","fullName":"hasPermission › viewer can only read","ancestorTitles":["hasPermission"],"status":"passed","duration":0,"failureMessages":[]},{"title":"unknown role has no permissions","fullName":"hasPermission › unknown role has no permissions","ancestorTitles":["hasPermission"],"status":"passed","duration":0,"failureMessages":[]},{"title":"custom roles can inherit from base roles","fullName":"hasPermission › custom roles can inherit from base roles","ancestorTitles":["hasPermission"],"status":"skipped","duration":0,"failureMessages":[]}],"consoleOutput":[]},{"displayName":"array.test.js","fullPath":"/Users/alwaysonlabs/Code/jest-html-test-report/tests/array.test.js","status":"passed","duration":0.014,"passed":17,"failed":0,"skipped":3,"total":20,"tests":[{"title":"flattens a one-level nested array","fullName":"flatten › flattens a one-level nested array","ancestorTitles":["flatten"],"status":"passed","duration":0,"failureMessages":[]},{"title":"flattens deeply nested arrays","fullName":"flatten › flattens deeply nested arrays","ancestorTitles":["flatten"],"status":"passed","duration":0,"failureMessages":[]},{"title":"returns the same array when already flat","fullName":"flatten › returns the same array when already flat","ancestorTitles":["flatten"],"status":"passed","duration":0,"failureMessages":[]},{"title":"handles empty arrays","fullName":"flatten › handles empty arrays","ancestorTitles":["flatten"],"status":"passed","duration":1,"failureMessages":[]},{"title":"removes duplicate numbers","fullName":"unique › removes duplicate numbers","ancestorTitles":["unique"],"status":"passed","duration":0,"failureMessages":[]},{"title":"removes duplicate strings","fullName":"unique › removes duplicate strings","ancestorTitles":["unique"],"status":"passed","duration":0,"failureMessages":[]},{"title":"returns unchanged array when no duplicates","fullName":"unique › returns unchanged array when no duplicates","ancestorTitles":["unique"],"status":"passed","duration":0,"failureMessages":[]},{"title":"splits array into chunks of given size","fullName":"chunk › splits array into chunks of given size","ancestorTitles":["chunk"],"status":"passed","duration":0,"failureMessages":[]},{"title":"returns a single chunk when size >= array length","fullName":"chunk › returns a single chunk when size >= array length","ancestorTitles":["chunk"],"status":"passed","duration":0,"failureMessages":[]},{"title":"throws when chunk size is 0","fullName":"chunk › throws when chunk size is 0","ancestorTitles":["chunk"],"status":"passed","duration":2,"failureMessages":[]},{"title":"handles empty array input","fullName":"chunk › handles empty array input","ancestorTitles":["chunk"],"status":"skipped","duration":0,"failureMessages":[]},{"title":"groups objects by a string key","fullName":"groupBy › groups objects by a string key","ancestorTitles":["groupBy"],"status":"passed","duration":0,"failureMessages":[]},{"title":"groups numbers by even/odd","fullName":"groupBy › groups numbers by even/odd","ancestorTitles":["groupBy"],"status":"passed","duration":1,"failureMessages":[]},{"title":"supports async key functions","fullName":"groupBy › supports async key functions","ancestorTitles":["groupBy"],"status":"skipped","duration":0,"failureMessages":[]},{"title":"zips two arrays together","fullName":"zip › zips two arrays together","ancestorTitles":["zip"],"status":"passed","duration":0,"failureMessages":[]},{"title":"truncates to the shortest array","fullName":"zip › truncates to the shortest array","ancestorTitles":["zip"],"status":"passed","duration":0,"failureMessages":[]},{"title":"zips three arrays","fullName":"zip › zips three arrays","ancestorTitles":["zip"],"status":"passed","duration":0,"failureMessages":[]},{"title":"difference returns elements only in first array","fullName":"difference and intersection › difference returns elements only in first array","ancestorTitles":["difference and intersection"],"status":"passed","duration":0,"failureMessages":[]},{"title":"intersection returns shared elements","fullName":"difference and intersection › intersection returns shared elements","ancestorTitles":["difference and intersection"],"status":"passed","duration":0,"failureMessages":[]},{"title":"symmetricDifference returns elements in either but not both","fullName":"difference and intersection › symmetricDifference returns elements in either but not both","ancestorTitles":["difference and intersection"],"status":"skipped","duration":0,"failureMessages":[]}],"consoleOutput":[]}],"options":{"executionTimeWarningThreshold":3}};
+    var SUMMARY_DATA = {"pageTitle":"Jest HTML Test Report — Local Demo","timestamp":"Apr 13, 2026, 05:53:13 PM","numTotal":94,"numPassed":85,"numFailed":3,"numSkipped":6,"numSuitesTotal":5,"numSuitesPassed":2,"numSuitesFailed":3,"totalDuration":"302ms","avgDuration":"3ms","successRate":"90.4","riskLevel":"Low"};
+
+(function () {
+  'use strict';
+
+  /* ── State ────────────────────────────────────────────────────────────── */
+  var currentFilter   = 'all';
+  var currentSearch   = '';
+  var expandedSuites  = {};
+  var toastTimer      = null;
+
+  /* ── Bootstrap ────────────────────────────────────────────────────────── */
+  document.addEventListener('DOMContentLoaded', function () {
+    // Auto-expand failed suites
+    REPORT_DATA.suites.forEach(function (suite, i) {
+      if (suite.status === 'failed') {
+        expandedSuites[i] = true;
+      }
+    });
+    renderSuites();
+    animateBars();
+  });
+
+  /* ── Filtering ────────────────────────────────────────────────────────── */
+  window.setFilter = function (filter) {
+    currentFilter = filter;
+    document.querySelectorAll('.filter-card').forEach(function (el) {
+      el.classList.toggle('active', el.dataset.filter === filter);
+    });
+    renderSuites();
+  };
+
+  /* ── Search ───────────────────────────────────────────────────────────── */
+  window.handleSearch = function (query) {
+    currentSearch = query.toLowerCase().trim();
+    renderSuites();
+  };
+
+  /* ── Expand / Collapse ────────────────────────────────────────────────── */
+  window.toggleSuite = function (index) {
+    expandedSuites[index] = !expandedSuites[index];
+    var card = document.getElementById('suite-' + index);
+    if (card) {
+      card.classList.toggle('expanded', !!expandedSuites[index]);
+    }
+  };
+
+  window.expandAll = function () {
+    REPORT_DATA.suites.forEach(function (_, i) { expandedSuites[i] = true; });
+    document.querySelectorAll('.suite-card').forEach(function (c) { c.classList.add('expanded'); });
+  };
+
+  window.collapseAll = function () {
+    REPORT_DATA.suites.forEach(function (_, i) { expandedSuites[i] = false; });
+    document.querySelectorAll('.suite-card').forEach(function (c) { c.classList.remove('expanded'); });
+  };
+
+  /* ── Render ───────────────────────────────────────────────────────────── */
+  window.renderSuites = function () {
+    var container = document.getElementById('testSuites');
+    if (!container) { return; }
+
+    var html = '<div class="suites-header">'
+      + '<span class="suites-title">Test Suites</span>'
+      + '<div class="suites-actions">'
+      + '<button class="btn btn-ghost" onclick="expandAll()" style="font-size:0.75rem;padding:5px 12px;">'
+      + svgIcon('maximize-2') + 'Expand all</button>'
+      + '<button class="btn btn-ghost" onclick="collapseAll()" style="font-size:0.75rem;padding:5px 12px;">'
+      + svgIcon('minimize-2') + 'Collapse all</button>'
+      + '</div></div>';
+
+    var visibleCount = 0;
+    var threshold = (REPORT_DATA.options && REPORT_DATA.options.executionTimeWarningThreshold) || 5;
+
+    REPORT_DATA.suites.forEach(function (suite, idx) {
+      var suiteVisible = isSuiteVisible(suite);
+      if (!suiteVisible) { return; }
+
+      visibleCount++;
+      var isExpanded = !!expandedSuites[idx];
+      var statusClass = 'suite-' + suite.status;
+      var expandClass = isExpanded ? ' expanded' : '';
+
+      html += '<div class="suite-card ' + statusClass + expandClass + '" id="suite-' + idx + '">';
+
+      /* ── Suite header ── */
+      html += '<div class="suite-header" onclick="toggleSuite(' + idx + ')" role="button" tabindex="0"'
+        + ' onkeydown="if(event.key===\'Enter\'||event.key===\' \')toggleSuite(' + idx + ')">';
+      html += '<div class="suite-status-dot"></div>';
+      html += '<div class="suite-name" title="' + escHtml(suite.fullPath) + '">' + escHtml(suite.displayName) + '</div>';
+      html += '<div class="suite-badges">';
+      if (suite.passed  > 0) { html += '<span class="badge badge-passed">'  + svgIcon('check', 10) + suite.passed  + '</span>'; }
+      if (suite.failed  > 0) { html += '<span class="badge badge-failed">'  + svgIcon('x',     10) + suite.failed  + '</span>'; }
+      if (suite.skipped > 0) { html += '<span class="badge badge-skipped">' + svgIcon('minus', 10) + suite.skipped + '</span>'; }
+      html += '</div>';
+      html += '<span class="suite-duration">' + fmtMs(suite.duration * 1000) + '</span>';
+      html += '<button class="expand-btn" aria-label="toggle">' + svgIcon('chevron-down') + '</button>';
+      html += '</div>'; /* /suite-header */
+
+      /* ── Suite body ── */
+      html += '<div class="suite-body">';
+
+      suite.tests.forEach(function (test) {
+        var testVisible = isTestVisible(test);
+        var hiddenClass = testVisible ? '' : ' test-hidden';
+        var testClass   = 'test-' + test.status;
+        var isSlow      = test.duration > threshold * 1000;
+
+        html += '<div class="test-row ' + testClass + hiddenClass + '">';
+        html += '<div class="test-status-icon">' + statusIcon(test.status) + '</div>';
+        html += '<div class="test-info">';
+        if (test.ancestorTitles && test.ancestorTitles.length) {
+          html += '<div class="test-ancestors">' + escHtml(test.ancestorTitles.join(' › ')) + '</div>';
+        }
+        html += '<div class="test-name">' + escHtml(test.title || test.fullName) + '</div>';
+        html += '</div>'; /* /test-info */
+
+        if (test.duration !== undefined && test.duration !== null) {
+          html += '<div class="test-duration' + (isSlow ? ' slow' : '') + '">'
+            + fmtMs(test.duration) + (isSlow ? ' ⚠️' : '') + '</div>';
+        }
+        html += '</div>'; /* /test-row */
+
+        /* Failure messages */
+        if (test.failureMessages && test.failureMessages.length && testVisible) {
+          test.failureMessages.forEach(function (msg) {
+            html += '<div class="failure-block' + hiddenClass + '"><pre>' + escHtml(stripAnsi(msg)) + '</pre></div>';
+          });
+        }
+      });
+
+      /* Console output */
+      if (suite.consoleOutput && suite.consoleOutput.length) {
+        html += '<div class="console-block">';
+        html += '<div class="console-title">Console output</div>';
+        html += '<pre>';
+        suite.consoleOutput.forEach(function (entry) {
+          html += '[' + (entry.type || 'log').toUpperCase() + '] ' + escHtml(stripAnsi(entry.message)) + '\n';
+        });
+        html += '</pre></div>';
+      }
+
+      html += '</div>'; /* /suite-body */
+      html += '</div>'; /* /suite-card */
+    });
+
+    /* No results message */
+    html += '<div class="no-results" id="noResults" style="' + (visibleCount === 0 ? 'display:block' : 'display:none') + '">'
+      + svgIcon('search')
+      + '<p>No tests match the current filter or search.</p>'
+      + '</div>';
+
+    container.innerHTML = html;
+    animateBars();
+  };
+
+  /* ── Visibility helpers ───────────────────────────────────────────────── */
+  function isSuiteVisible(suite) {
+    // Search filter
+    if (currentSearch) {
+      var nameMatch = suite.displayName.toLowerCase().indexOf(currentSearch) !== -1;
+      var testMatch = suite.tests.some(function (t) {
+        return (t.fullName || '').toLowerCase().indexOf(currentSearch) !== -1
+            || (t.title  || '').toLowerCase().indexOf(currentSearch) !== -1;
+      });
+      if (!nameMatch && !testMatch) { return false; }
+    }
+    // Status filter
+    if (currentFilter === 'all') { return true; }
+    return suite.tests.some(function (t) { return t.status === currentFilter; });
+  }
+
+  function isTestVisible(test) {
+    if (currentFilter !== 'all' && test.status !== currentFilter) { return false; }
+    if (currentSearch) {
+      var n = ((test.fullName || '') + ' ' + (test.title || '')).toLowerCase();
+      if (n.indexOf(currentSearch) === -1) { return false; }
+    }
+    return true;
+  }
+
+  /* ── Helpers ──────────────────────────────────────────────────────────── */
+  function fmtMs(ms) {
+    var n = parseFloat(ms) || 0;
+    if (n < 1000) { return n.toFixed(0) + 'ms'; }
+    if (n < 60000) { return (n / 1000).toFixed(2) + 's'; }
+    var m = Math.floor(n / 60000);
+    var s = ((n % 60000) / 1000).toFixed(1);
+    return m + 'm ' + s + 's';
+  }
+
+  function stripAnsi(s) {
+    if (s == null) { return ''; }
+    // Remove ANSI escape sequences (e.g. [31m, [1;32m, [0m)
+    return String(s).replace(/[[0-9;]*[a-zA-Z]/g, '');
+  }
+
+  function escHtml(s) {
+    if (s == null) { return ''; }
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function svgIcon(name, size) {
+    size = size || 14;
+    var paths = {
+      'check':       '<polyline points="20 6 9 17 4 12"/>',
+      'x':           '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',
+      'minus':       '<line x1="5" y1="12" x2="19" y2="12"/>',
+      'chevron-down':'<polyline points="6 9 12 15 18 9"/>',
+      'maximize-2':  '<polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>',
+      'minimize-2':  '<polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="10" y1="14" x2="3" y2="21"/><line x1="21" y1="3" x2="14" y2="10"/>',
+      'search':      '<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>',
+      'copy':        '<rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>',
+      'sun':         '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>',
+      'moon':        '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>',
+      'mail':        '<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>',
+    };
+    var inner = paths[name] || '';
+    return '<svg xmlns="http://www.w3.org/2000/svg" width="' + size + '" height="' + size
+      + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"'
+      + ' stroke-linecap="round" stroke-linejoin="round">' + inner + '</svg>';
+  }
+
+  function statusIcon(status) {
+    if (status === 'passed')  { return svgIcon('check', 10); }
+    if (status === 'failed')  { return svgIcon('x',     10); }
+    if (status === 'skipped') { return svgIcon('minus', 10); }
+    return '';
+  }
+
+  /* ── Animate filter bar fills ─────────────────────────────────────────── */
+  function animateBars() {
+    document.querySelectorAll('.fc-bar-fill[data-pct]').forEach(function (el) {
+      el.style.width = el.dataset.pct + '%';
+    });
+  }
+
+  /* ── Theme toggle ─────────────────────────────────────────────────────── */
+  window.toggleTheme = function () {
+    var body = document.body;
+    var isDark = body.classList.contains('dark-theme');
+    body.classList.toggle('dark-theme',  !isDark);
+    body.classList.toggle('light-theme',  isDark);
+    var btn = document.getElementById('themeBtn');
+    if (btn) { btn.title = isDark ? 'Switch to dark theme' : 'Switch to light theme'; }
+  };
+
+  /* ── Copy summary to clipboard ───────────────────────────────────────── */
+  window.copySummaryToClipboard = function () {
+    var d = window.SUMMARY_DATA || {};
+    var lines = [
+      '='.repeat(52),
+      'TEST REPORT: ' + (d.pageTitle || 'Test Report'),
+      '='.repeat(52),
+      'Date: ' + (d.timestamp || ''),
+      '',
+      'SUMMARY',
+      '-'.repeat(52),
+      'Tests:    ' + d.numTotal + ' total  |  ' + d.numPassed + ' passed  |  ' + d.numFailed + ' failed  |  ' + d.numSkipped + ' skipped',
+      'Suites:   ' + d.numSuitesTotal + ' total  |  ' + d.numSuitesPassed + ' passed  |  ' + d.numSuitesFailed + ' failed',
+      'Duration: ' + d.totalDuration + ' total  |  ' + d.avgDuration + ' avg per test',
+      'Success:  ' + d.successRate + '%  |  Risk Level: ' + d.riskLevel.toUpperCase(),
+    ];
+
+    if (d.numFailed > 0) {
+      lines.push('');
+      lines.push('⚠ FAILURES');
+      lines.push('-'.repeat(52));
+      REPORT_DATA.suites.forEach(function (suite) {
+        var failedTests = suite.tests.filter(function (t) { return t.status === 'failed'; });
+        if (!failedTests.length) { return; }
+        lines.push(suite.displayName);
+        failedTests.forEach(function (t) {
+          lines.push('  ✗ ' + (t.fullName || t.title));
+        });
+      });
+    }
+
+    lines.push('');
+    lines.push('-'.repeat(52));
+    lines.push('Generated by jest-html-test-report');
+
+    var text = lines.join('\n');
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () {
+        showToast('Summary copied to clipboard!');
+      }).catch(function () {
+        fallbackCopy(text);
+      });
+    } else {
+      fallbackCopy(text);
+    }
+  };
+
+  function fallbackCopy(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.cssText = 'position:fixed;top:-999px;left:-999px;opacity:0;';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    try {
+      document.execCommand('copy');
+      showToast('Summary copied to clipboard!');
+    } catch (e) {
+      showToast('Could not copy — check browser permissions.');
+    }
+    document.body.removeChild(ta);
+  }
+
+  function showToast(msg) {
+    var el = document.getElementById('toast');
+    if (!el) { return; }
+    el.textContent = msg;
+    el.classList.add('visible');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { el.classList.remove('visible'); }, 3000);
+  }
+
+}());
+
+  </script>
+
+</body>
+</html>
