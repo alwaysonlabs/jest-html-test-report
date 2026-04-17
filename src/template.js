@@ -197,7 +197,7 @@ ${getStyles()}${customStyle ? '\n/* ── Custom Styles ───────�
     ${renderHeader(data)}
     <main class="main">
       <div class="container">
-        ${renderExecutiveSummary(data)}
+        ${renderExecutionSummary(data)}
         ${renderPerformanceCards(data)}
         ${data.numFailed > 0 ? renderWarningBanner(data) : ''}
         ${renderActionBar()}
@@ -262,7 +262,7 @@ function renderHeader(data) {
   </header>`;
 }
 
-function renderExecutiveSummary(data) {
+function renderExecutionSummary(data) {
   const pct = data.successRateInt;
 
   // Donut SVG — radius 15.9155 makes circumference ≈ 100
@@ -340,7 +340,7 @@ function renderExecutiveSummary(data) {
     <div class="summary-top">
       <div class="summary-heading">
         <h2>Execution Summary</h2>
-        <p>Quality metrics at a glance for stakeholders</p>
+        <p>${escHtml(data.options.executionSummarySubtitle || 'Quality metrics at a glance for stakeholders')}</p>
       </div>
       <div class="risk-widget">
         <span class="risk-label-top">Risk Level</span>

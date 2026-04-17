@@ -16,8 +16,6 @@ A sleek, modern HTML test reporter for [Jest](https://jestjs.io/) with a dark gl
 
 ## Preview
 
-Sample Jest HTML test report [here](https://alwaysonlabs.github.io/jest-html-test-report/sample-report.html).
-
 ![Preview](assets/preview.gif)
 
 ---
@@ -156,6 +154,7 @@ All options are optional. Pass them as the second element of the reporter tuple.
 | `showEnvironment` | `boolean` | `true` | Render the Environment section (Node version, platform, Jest version, timestamp) at the bottom of the report. |
 | `customStylePath` | `string \| null` | `null` | Path to a `.css` file whose contents are appended **after** the built-in styles, letting you override any style without forking the package. |
 | `showSupportButton` | `boolean` | `true` | Show the support button in the report header. Set to `false` to hide it. |
+| `executionSummarySubtitle` | `string` | `"Quality metrics at a glance for stakeholders"` | Subtitle text displayed beneath the "Execution Summary" heading. |
 | `riskThresholds` | `object` | `{ low: 90, medium: 70 }` | Pass-rate percentages that determine the **Risk Level** label and donut-chart color. See below. |
 | `durationThresholds` | `number[]` | `[300, 1000, 2000]` | Millisecond breakpoints used to bucket tests in the **Duration Distribution** card. N values produce N+1 buckets. See below. |
 
