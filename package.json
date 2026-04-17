@@ -7,12 +7,6 @@
   "bin": {
     "jest-test-report": "./bin/jest-test-report.js"
   },
-  "files": [
-    "bin/",
-    "src/",
-    "index.js",
-    "README.md"
-  ],
   "keywords": [
     "jest",
     "reporter",
