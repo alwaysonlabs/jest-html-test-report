@@ -16,6 +16,8 @@ A sleek, modern HTML test reporter for [Jest](https://jestjs.io/) with a dark gl
 
 ## Preview
 
+Sample report available [here](https://alwaysonlabs.github.io/jest-html-test-report/sample-report.html).
+
 ![Preview](assets/preview.gif)
 
 ---
